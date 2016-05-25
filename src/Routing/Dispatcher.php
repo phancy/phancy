@@ -29,7 +29,7 @@ class Dispatcher implements FastRouteDispatcher
         // return 405 Method Not Allowed
         break;
       case FastRouteDispatcher::FOUND:
-        // call handler
+        return var_dump($route);
         break;
     }
   }
