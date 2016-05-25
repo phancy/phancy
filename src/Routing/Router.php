@@ -12,8 +12,8 @@ class Router
 
   public function __construct()
   {
-    $generator = new DataGenerator;
-    $parser    = new RouteParser;
+    $generator = new DataGenerator\GroupCountBased();
+    $parser    = new RouteParser\Std();
     $this->collection = new RouteCollector($parser, $generator);
   }
 

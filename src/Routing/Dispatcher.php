@@ -15,11 +15,9 @@ class Dispatcher implements FastRouteDispatcher
     $this->dispatcher = new GroupCountBased($routes->getData());
   }
 
-  public function dispatch()
+  public function dispatch($method, $uri)
   {
-    $http  = $this->parseMethod();
-    $uri   = $this->parseUri();
-    $route = $this->dispatcher->dispatch($http, $uri);
+    $route = $this->dispatcher->dispatch($method, $uri);
 
     switch($route[0]) {
       case FastRouteDispatcher::NOT_FOUND:
@@ -32,19 +30,5 @@ class Dispatcher implements FastRouteDispatcher
         return var_dump($route);
         break;
     }
-  }
-
-  private function parseMethod()
-  {
-    return $_SERVER['REQUEST_METHOD'];
-  }
-
-  private function parseUri()
-  {
-    if (false !== $pos = strpos($uri, '?')) {
-      $uri = substr($uri, 0, $pos);
-    }
-
-    return rawurldecode($uri);
   }
 }

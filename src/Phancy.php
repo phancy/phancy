@@ -38,7 +38,7 @@ class Phancy {
         }
 
         $dispatcher = new Routing\Dispatcher($this->router);
-        $data = $dispatcher->dispatch();
+        $data = $dispatcher->dispatch($this->request->getMethod(), $this->request->getUri());
 
         if ($serializer !== null) {
             $this->serializer = $serializer;
@@ -68,7 +68,7 @@ class Phancy {
             // $params[1] is the route's handler
             $this->router->addRoute($verb, $params[0], $params[1]);
         } else {
-            thrown new \Exception('Method not found');
+            throw new \Exception('Method not found');
       }
     }
 
