@@ -10,13 +10,20 @@ class Phancy {
     private $request;
     private $response;
     private $verbs = ['DELETE', 'GET', 'PATCH', 'POST', 'PUT'];
+    private $beforeFilters;
+    private $afterFilters;
+    private $serializer;
 
     public function __construct()
     {
         $this->resources = [];
+        $this->beforeFilters = [];
+        $this->afterFilters = [];
+        $this->errorHandler = null;
         $this->request = new Http\Request;
         $this->response = new Http\Response;
         $this->router = new Routing\Router;
+        $this->serializer = new Serializers\JsonSerializer();
     }
 
     public function register(Interfaces\Resource $resource)
@@ -30,25 +37,56 @@ class Phancy {
             $resource->endpoints($this);
         }
 
-        // dispatch routes
         $dispatcher = new Routing\Dispatcher($this->router);
         $data = $dispatcher->dispatch();
 
-        if ($serializer === null) {
-            $serializer = new Serializers\JsonSerializer($data);
+        if ($serializer !== null) {
+            $this->serializer = $serializer;
         }
 
+        $this->callBeforeFilters();
+
         $this->response->send($serializer);
+
+        $this->callAfterFilters();
+    }
+
+    public function addBeforeFilter(callable $callback)
+    {
+        array_push($this->beforeFilters, $callback);
+    }
+
+    public function addAfterFilter(callable $callback)
+    {
+        array_push($this->afterFilters, $callback);
     }
 
     public function __call($verb, $params)
     {
-      if (in_array($verb, $this->verbs)) {
-          // $params[0] is the route's endpoint
-          // $params[1] is the route's handler
-          $this->router->addRoute($verb, $params[0], $params[1]);
-      } else {
-          thrown new \Exception('Method not found');
+        if (in_array($verb, $this->verbs)) {
+            // $params[0] is the route's endpoint
+            // $params[1] is the route's handler
+            $this->router->addRoute($verb, $params[0], $params[1]);
+        } else {
+            thrown new \Exception('Method not found');
       }
+    }
+
+    private function callBeforeFilters()
+    {
+        foreach ($this->beforeFilters as $beforeFilter) {
+            $response = call_user_func_array($beforeFilter, [$this->request, $this->response]);
+
+            if ($response !== null) {
+                $response->send($this->serializer);
+            }
+        }
+    }
+
+    private function callAfterFilters()
+    {
+        foreach ($this->afterFilters as $afterFilter) {
+            call_user_func_array($afterFilter, [$this->request, $this->response]);
+        }
     }
 }

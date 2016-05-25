@@ -10,3 +10,4 @@
 - create starter phancy-project
 - CORS Support
 - performance: memory, speed
+- custom callables for filters to ensure we can pass request and response
