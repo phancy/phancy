@@ -3,7 +3,8 @@ namespace Phancy\Http;
 
 use Phancy\Interfaces\Serializer;
 
-class Response {
+class Response
+{
     private $delegate;
     private $data;
 

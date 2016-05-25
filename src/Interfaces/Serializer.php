@@ -1,6 +1,7 @@
 <?php
 namespace Phancy\Interfaces;
 
-interface Serializer {
+interface Serializer
+{
     public function serialize($data);
 }

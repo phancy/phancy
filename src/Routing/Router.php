@@ -8,17 +8,17 @@ use FastRoute\RouteParser;
 
 class Router
 {
-  private $collection;
+    private $collection;
 
-  public function __construct()
-  {
-    $generator = new DataGenerator\GroupCountBased();
-    $parser    = new RouteParser\Std();
-    $this->collection = new RouteCollector($parser, $generator);
-  }
+    public function __construct()
+    {
+        $generator = new DataGenerator\GroupCountBased();
+        $parser    = new RouteParser\Std();
+        $this->collection = new RouteCollector($parser, $generator);
+    }
 
-  public function addRoute($verb, $endpoint, $handler)
-  {
-    $this->collection->addRoute($verb, $endpoint, $handler);
-  }
+    public function addRoute($verb, $endpoint, $handler)
+    {
+        $this->collection->addRoute($verb, $endpoint, $handler);
+    }
 }

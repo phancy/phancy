@@ -4,7 +4,8 @@ namespace Phancy;
 use Phancy\Interfaces\Serializer;
 use Phancy\Routing\Router;
 
-class Phancy {
+class Phancy
+{
     private $router;
     private $resources;
     private $request;
@@ -69,7 +70,7 @@ class Phancy {
             $this->router->addRoute($verb, $params[0], $params[1]);
         } else {
             throw new \Exception('Method not found');
-      }
+        }
     }
 
     private function callBeforeFilters()

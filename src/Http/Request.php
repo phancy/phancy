@@ -1,7 +1,8 @@
 <?php
 namespace Phancy\Http;
 
-class Request {
+class Request
+{
     private $delegate;
 
     public function __construct()

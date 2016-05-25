@@ -3,6 +3,7 @@ namespace Phancy\Interfaces;
 
 use Phancy\Phancy;
 
-interface Resource {
+interface Resource
+{
     public function endpoints(Phancy $phancy);
 }
