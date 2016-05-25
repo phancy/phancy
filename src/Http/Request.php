@@ -2,12 +2,15 @@
 namespace Phancy\Http;
 
 class Request {
-    private $request;
+    private $delegate;
 
     public function __construct()
     {
-        $this->request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+        $this->delegate = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
     }
 
-    // TODO: add methods from Nancy to wrap Symphony's Request methods
+    public function __call($method, $args)
+    {
+        return call_user_func_array([$this->delegate, $method], $args);
+    }
 }
