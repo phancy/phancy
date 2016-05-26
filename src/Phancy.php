@@ -64,6 +64,7 @@ class Phancy
 
     public function __call($name, $arguments)
     {
+        $name = strtoupper($name);
         if (in_array($name, $this->verbs)) {
             $this->router->addRoute($name, $arguments[0], $arguments[1]);
         } else {
