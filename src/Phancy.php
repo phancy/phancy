@@ -4,7 +4,6 @@ namespace Phancy;
 use Exception;
 use Phancy\Http\Response;
 use Phancy\Interfaces\Serializer;
-use Phancy\Routing\Router;
 
 class Phancy
 {
@@ -47,7 +46,7 @@ class Phancy
         }
 
         $dispatcher = new Routing\Dispatcher($this->router);
-        $response = $dispatcher->dispatch($this->request->getMethod(), $this->request->getUri());
+        $response = $dispatcher->dispatch($this->request, $this->response);
 
         try {
             $this->callBeforeFilters();
