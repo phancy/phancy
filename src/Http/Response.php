@@ -17,21 +17,25 @@ class Response
     public function setHeader($key, $value)
     {
         $this->delegate->headers->set($key, $value);
+        return $this;
     }
 
     public function setHeaders(array $headers)
     {
         $this->delegate->headers->add($headers);
+        return $this;
     }
 
     public function setData($data)
     {
         $this->data = $data;
+        return $this;
     }
 
     public function setStatusCode($code)
     {
         $this->delegate->setStatusCode($code);
+        return $this;
     }
 
     public function send(Serializer $serializer)
