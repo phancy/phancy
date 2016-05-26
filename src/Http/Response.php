@@ -5,25 +5,20 @@ use Phancy\Interfaces\Serializer;
 
 class Response
 {
-    private $delegate;
+    private $headers;
     private $data;
+    private $statusCode;
 
     public function __construct()
     {
-        $this->delegate = new \Symfony\Component\HttpFoundation\Response();
+        $this->headers = [];
         $this->data = null;
+        $this->statusCode = \Symfony\Component\HttpFoundation\Response::HTTP_OK;
     }
 
-    public function setHeader($key, $value)
+    public function getData()
     {
-        $this->delegate->headers->set($key, $value);
-        return $this;
-    }
-
-    public function setHeaders(array $headers)
-    {
-        $this->delegate->headers->add($headers);
-        return $this;
+        return $this->data;
     }
 
     public function setData($data)
@@ -32,15 +27,31 @@ class Response
         return $this;
     }
 
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    public function setHeader($key, $value)
+    {
+        $this->headers[$key] = $value;
+        return $this;
+    }
+
+    public function setHeaders(array $headers)
+    {
+        $this->headers = array_replace($this->headers, $headers);
+        return $this;
+    }
+
+    public function getStatusCode()
+    {
+        return $this->statusCode;
+    }
+
     public function setStatusCode($code)
     {
         $this->delegate->setStatusCode($code);
         return $this;
-    }
-
-    public function send(Serializer $serializer)
-    {
-        $this->delegate->setContent($serializer->serialize($this->data));
-        $this->delegate->send();
     }
 }

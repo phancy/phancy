@@ -1,6 +1,7 @@
 <?php
 namespace Phancy;
 
+use Phancy\Http\Response;
 use Phancy\Interfaces\Serializer;
 use Phancy\Routing\Router;
 
@@ -21,9 +22,9 @@ class Phancy
         $this->beforeFilters = [];
         $this->afterFilters = [];
         $this->errorHandler = null;
-        $this->request = new Http\Request;
-        $this->response = new Http\Response;
-        $this->router = new Routing\Router;
+        $this->request = new Http\Request();
+        $this->response = new Http\Response();
+        $this->router = new Routing\Router();
         $this->serializer = new Serializers\JsonSerializer();
     }
 
@@ -32,23 +33,22 @@ class Phancy
         array_push($this->resources, $resource);
     }
 
-    public function process(Serializer $serializer = null)
+    public function setSerializer(Serializer $serializer)
+    {
+        $this->serializer = $serializer;
+    }
+
+    public function process()
     {
         foreach ($this->resources as $resource) {
             $resource->endpoints($this);
         }
 
         $dispatcher = new Routing\Dispatcher($this->router);
-        $data = $dispatcher->dispatch($this->request->getMethod(), $this->request->getUri());
-
-        if ($serializer !== null) {
-            $this->serializer = $serializer;
-        }
+        $response = $dispatcher->dispatch($this->request->getMethod(), $this->request->getUri());
 
         $this->callBeforeFilters();
-
-        $this->response->send($serializer);
-
+        $this->sendResponse($response);
         $this->callAfterFilters();
     }
 
@@ -62,15 +62,23 @@ class Phancy
         array_push($this->afterFilters, $callback);
     }
 
-    public function __call($verb, $params)
+    public function __call($name, $arguments)
     {
-        if (in_array($verb, $this->verbs)) {
-            // $params[0] is the route's endpoint
-            // $params[1] is the route's handler
-            $this->router->addRoute($verb, $params[0], $params[1]);
+        if (in_array($name, $this->verbs)) {
+            $this->router->addRoute($name, $arguments[0], $arguments[1]);
         } else {
             throw new \Exception('Method not found');
         }
+    }
+
+    private function sendResponse(Response $response)
+    {
+        $sendable_response = new \Symfony\Component\HttpFoundation\Response(
+            $this->serializer->serialize($response->getData()),
+            $response->getStatusCode(),
+            $response->getHeaders()
+        );
+        $sendable_response->send();
     }
 
     private function callBeforeFilters()
@@ -79,7 +87,7 @@ class Phancy
             $response = call_user_func_array($beforeFilter, [$this->request, $this->response]);
 
             if ($response !== null) {
-                $response->send($this->serializer);
+                $this->sendResponse($response);
             }
         }
     }
