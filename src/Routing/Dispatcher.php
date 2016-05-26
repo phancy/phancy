@@ -2,33 +2,31 @@
 
 namespace Phancy\Routing;
 
-use FastRoute\RouteCollector;
 use FastRoute\Dispatcher\GroupCountBased;
-use FastRoute\Dispatcher as FastRouteDispatcher;
 
-class Dispatcher implements FastRouteDispatcher
+class Dispatcher implements \FastRoute\Dispatcher
 {
     private $dispatcher;
 
-    public function __construct(RouteCollector $routes)
+    public function __construct(Router $routes)
     {
         $this->dispatcher = new GroupCountBased($routes->getData());
     }
 
-    public function dispatch($method, $uri)
+    public function dispatch($request, $response)
     {
-        $route = $this->dispatcher->dispatch($method, $uri);
+        $route = $this->dispatcher->dispatch($request->getMethod(), $request->getRequestUri());
 
         switch($route[0]) {
-            case FastRouteDispatcher::NOT_FOUND:
-              // return 404 Not Found
+            case \FastRoute\Dispatcher::NOT_FOUND:
+                // return 404 Not Found
                 break;
-            case FastRouteDispatcher::METHOD_NOT_ALLOWED:
-              // return 405 Method Not Allowed
+            case \FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+                // return 405 Method Not Allowed
                 break;
-            case FastRouteDispatcher::FOUND:
-                return var_dump($route);
-            break;
+            case \FastRoute\Dispatcher::FOUND:
+                return call_user_func_array($route[1], [$request, $response]);
+                break;
         }
     }
 }
