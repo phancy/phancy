@@ -27,7 +27,7 @@ class Phancy
         $this->serializer = new Serializers\JsonSerializer();
     }
 
-    public function register(Interfaces\Resource $resource)
+    public function addResource(Interfaces\Resource $resource)
     {
         array_push($this->resources, $resource);
     }
