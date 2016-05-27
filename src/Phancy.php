@@ -3,13 +3,12 @@ namespace Phancy;
 
 use Exception;
 use Phancy\Exceptions\HttpNotFound;
-use Phancy\Http\Resource;
+
 use Phancy\Http\Response;
 use Phancy\Interfaces\Serializer;
 
 class Phancy
 {
-    private $router;
     private $resources;
     private $request;
     private $response;

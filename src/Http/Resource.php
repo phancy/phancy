@@ -9,7 +9,8 @@ abstract class Resource
     private $beforeFilters = [];
     private $errorHandler = null;
 
-    public function addAfterFilter(callable $callback) {
+    public function addAfterFilter(callable $callback)
+    {
         array_push($this->afterFilters, $callback);
     }
 
@@ -18,7 +19,8 @@ abstract class Resource
         return $this->afterFilters;
     }
 
-    public function addBeforeFilter(callable $callback) {
+    public function addBeforeFilter(callable $callback)
+    {
         array_push($this->beforeFilters, $callback);
     }
 

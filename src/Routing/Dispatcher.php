@@ -3,9 +3,6 @@
 namespace Phancy\Routing;
 
 use Phancy\Exceptions\HttpMethodNotAllowed;
-use Phancy\Exceptions\HttpNotFound;
-use Phancy\Http\Request;
-use Phancy\Http\Response;
 use FastRoute\Dispatcher\GroupCountBased;
 
 class Dispatcher

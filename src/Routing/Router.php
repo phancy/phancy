@@ -5,7 +5,6 @@ namespace Phancy\Routing;
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser;
-use Phancy\Exceptions\HttpMethodNotFound;
 
 class Router
 {
