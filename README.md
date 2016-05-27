@@ -1,14 +1,5 @@
-# phancy
+# Phancy
 
-## TODO
-- on error handler
-- move to GitHub
-- refactor
-- register package
-- backfill tests
+This repository contains a super secret, public project we've been working on during [php\[tek\]](https://tek.phparch.com).
 
-## Backlog
-- cookie support
-- CORS Support
-- benchmark performance: memory, speed
-- custom callables for filters to ensure we can pass request and response
+_**Note:** Phancy is still in alpha. We plan to release the initial version before June. Stay tuned…_
