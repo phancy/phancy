@@ -17,9 +17,9 @@ class Dispatcher
         $this->dispatcher = new GroupCountBased($routes->getData());
     }
 
-    public function dispatch(Request $request, Response $response)
+    public function dispatch($method, $uri)
     {
-        $route = $this->dispatcher->dispatch($request->getMethod(), $request->getRequestUri());
+        $route = $this->dispatcher->dispatch($method, $uri);
 
         switch($route[0]) {
             case \FastRoute\Dispatcher::NOT_FOUND:
@@ -27,8 +27,7 @@ class Dispatcher
             case \FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
                 throw new HttpMethodNotAllowed();
             case \FastRoute\Dispatcher::FOUND:
-                return $response->setData(call_user_func_array($route[1], $route[2]));
-                break;
+                return new Route($route[1], $route[2]);
         }
     }
 }
