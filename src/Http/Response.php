@@ -1,8 +1,6 @@
 <?php
 namespace Phancy\Http;
 
-use Phancy\Interfaces\Serializer;
-
 class Response
 {
     private $headers;
@@ -51,7 +49,7 @@ class Response
 
     public function setStatusCode($code)
     {
-        $this->delegate->setStatusCode($code);
+        $this->statusCode = $code;
         return $this;
     }
 }

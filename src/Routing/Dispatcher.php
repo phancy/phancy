@@ -2,14 +2,14 @@
 
 namespace Phancy\Routing;
 
+use Phancy\Exceptions\HttpMethodNotAllowed;
+use Phancy\Exceptions\HttpNotFound;
 use Phancy\Http\Request;
 use Phancy\Http\Response;
 use FastRoute\Dispatcher\GroupCountBased;
 
 class Dispatcher
 {
-    private $request;
-    private $response;
     private $dispatcher;
 
     public function __construct(Router $routes)
@@ -23,11 +23,9 @@ class Dispatcher
 
         switch($route[0]) {
             case \FastRoute\Dispatcher::NOT_FOUND:
-                // return 404 Not Found
-                break;
+                throw new HttpNotFound();
             case \FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-                // return 405 Method Not Allowed
-                break;
+                throw new HttpMethodNotAllowed();
             case \FastRoute\Dispatcher::FOUND:
                 return $response->setData(call_user_func_array($route[1], $route[2]));
                 break;

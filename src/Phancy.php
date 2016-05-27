@@ -1,9 +1,9 @@
 <?php
 namespace Phancy;
 
+use Exception;
 use Phancy\Http\Response;
 use Phancy\Interfaces\Serializer;
-use Phancy\Routing\Router;
 
 class Phancy
 {
@@ -15,6 +15,7 @@ class Phancy
     private $beforeFilters;
     private $afterFilters;
     private $serializer;
+    private $errorHandler;
 
     public function __construct()
     {
@@ -45,11 +46,20 @@ class Phancy
         }
 
         $dispatcher = new Routing\Dispatcher($this->router);
-        $response = $dispatcher->dispatch($this->request->getMethod(), $this->request->getUri());
+        $response = $dispatcher->dispatch($this->request, $this->response);
 
-        $this->callBeforeFilters();
-        $this->sendResponse($response);
-        $this->callAfterFilters();
+        try {
+            $this->callBeforeFilters();
+            $this->sendResponse($response);
+            $this->callAfterFilters();
+        } catch (Exception $e) {
+            $this->handleError($e);
+        }
+    }
+
+    public function setErrorHandler(callable $errorHandler)
+    {
+        $this->errorHandler = $errorHandler;
     }
 
     public function addBeforeFilter(callable $callback)
@@ -87,7 +97,7 @@ class Phancy
         foreach ($this->beforeFilters as $beforeFilter) {
             $response = call_user_func_array($beforeFilter, [$this->request, $this->response]);
 
-            if ($response !== null) {
+            if ($response instanceof Response) {
                 $this->sendResponse($response);
             }
         }
@@ -98,5 +108,18 @@ class Phancy
         foreach ($this->afterFilters as $afterFilter) {
             call_user_func_array($afterFilter, [$this->request, $this->response]);
         }
+    }
+
+    private function handleError(Exception $e)
+    {
+        if ($this->errorHandler !== null) {
+            $response = call_user_func_array($this->errorHandler, [$e]);
+            if ($response instanceof Response) {
+                $this->sendResponse($response);
+                return;
+            }
+        }
+
+        throw $e;
     }
 }

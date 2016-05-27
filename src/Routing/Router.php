@@ -13,7 +13,7 @@ class Router
     public function __construct()
     {
         $generator = new GroupCountBased();
-        $parser    = new RouteParser\Std();
+        $parser = new RouteParser\Std();
         $this->collection = new RouteCollector($parser, $generator);
     }
 
