@@ -2,6 +2,7 @@
 namespace Phancy;
 
 use Exception;
+use Phancy\Http\Resource;
 use Phancy\Http\Response;
 use Phancy\Interfaces\Serializer;
 
@@ -11,17 +12,11 @@ class Phancy
     private $resources;
     private $request;
     private $response;
-    private $beforeFilters;
-    private $afterFilters;
     private $serializer;
-    private $errorHandler;
 
     public function __construct()
     {
         $this->resources = [];
-        $this->beforeFilters = [];
-        $this->afterFilters = [];
-        $this->errorHandler = null;
         $this->request = new Http\Request();
         $this->response = new Http\Response();
         $this->serializer = new Serializers\JsonSerializer();
@@ -45,34 +40,22 @@ class Phancy
             $dispatcher = new Routing\Dispatcher($router);
             $route = $dispatcher->dispatch($this->request->getMethod(), $this->request->getRequestUri());
 
-            if(!is_null($route)) {
+            if ($route !== null) {
                 break;
             }
         }
 
+        // TODO: throw error if we never find a route...
+
         try {
-            $this->callBeforeFilters();
+            $this->callBeforeFilters($resource);
+            // TODO: stop execution if before filter returns response...
             $response = call_user_func_array($route->getCallback(), [$this->request, $this->response]);
+            $this->callAfterFilters($resource);
             $this->sendResponse($response);
-            $this->callAfterFilters();
         } catch (Exception $e) {
-            $this->handleError($e);
+            $this->handleError($resource, $e);
         }
-    }
-
-    public function setErrorHandler(callable $errorHandler)
-    {
-        $this->errorHandler = $errorHandler;
-    }
-
-    public function addBeforeFilter(callable $callback)
-    {
-        array_push($this->beforeFilters, $callback);
-    }
-
-    public function addAfterFilter(callable $callback)
-    {
-        array_push($this->afterFilters, $callback);
     }
 
     private function sendResponse(Response $response)
@@ -85,9 +68,9 @@ class Phancy
         $sendable_response->send();
     }
 
-    private function callBeforeFilters()
+    private function callBeforeFilters(Http\Resource $resource)
     {
-        foreach ($this->beforeFilters as $beforeFilter) {
+        foreach ($resource->getBeforeFilters() as $beforeFilter) {
             $response = call_user_func_array($beforeFilter, [$this->request, $this->response]);
 
             if ($response instanceof Response) {
@@ -96,17 +79,18 @@ class Phancy
         }
     }
 
-    private function callAfterFilters()
+    private function callAfterFilters(Http\Resource $resource)
     {
-        foreach ($this->afterFilters as $afterFilter) {
+        foreach ($resource->getAfterFilters() as $afterFilter) {
             call_user_func_array($afterFilter, [$this->request, $this->response]);
         }
     }
 
-    private function handleError(Exception $e)
+    private function handleError(Http\Resource $resource, Exception $e)
     {
-        if ($this->errorHandler !== null) {
-            $response = call_user_func_array($this->errorHandler, [$e]);
+        $errorHandler = $resource->getErrorHandler();
+        if ($errorHandler !== null) {
+            $response = call_user_func_array($errorHandler, [$e]);
             if ($response instanceof Response) {
                 $this->sendResponse($response);
                 return;
