@@ -5,10 +5,12 @@ namespace Phancy\Routing;
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser;
+use Phancy\Exceptions\HttpMethodNotFound;
 
 class Router
 {
     private $collection;
+    private $verbs = ['DELETE', 'GET', 'PATCH', 'POST', 'PUT'];
 
     public function __construct()
     {
@@ -25,5 +27,10 @@ class Router
     public function getData()
     {
         return $this->collection->getData();
+    }
+
+    public function __call($name, $arguments)
+    {
+        $this->addRoute(strtoupper($name), $arguments[0], $arguments[1]);
     }
 }
