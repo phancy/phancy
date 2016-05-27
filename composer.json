@@ -1,11 +1,24 @@
 {
-    "name": "pureconcepts/phancy",
-    "description": "A lightweight component for building HTTP based services.",
+    "name": "phancy/phancy",
+    "description": "A lightweight HTTP service layer.",
+    "keywords": ["http", "api", "router"],
     "license": "MIT",
+    "support": {
+        "issues": "https://github.com/phancy/phancy/issues",
+        "source": "https://github.com/phancy/phancy"
+    },
     "authors": [
+        {
+            "name": "Joel Jacob",
+            "email": "joeljoeljoel@gmail.com"
+        },
         {
             "name": "Jason McCreary",
             "email": "jason@pureconcepts.net"
+        },
+        {
+            "name": "Lark Mullins",
+            "email": "larkmullins@gmail.com"
         }
     ],
     "require": {
