@@ -24,7 +24,6 @@ class Phancy
         $this->errorHandler = null;
         $this->request = new Http\Request();
         $this->response = new Http\Response();
-        $this->router = new Routing\Router();
         $this->serializer = new Serializers\JsonSerializer();
     }
 
@@ -41,13 +40,19 @@ class Phancy
     public function process()
     {
         foreach ($this->resources as $resource) {
-            $resource->endpoints($this->router);
-            $dispatcher = new Routing\Dispatcher($this->router);
-            $response = $dispatcher->dispatch($this->request, $this->response);
+            $router = new Routing\Router();
+            $resource->endpoints($router);
+            $dispatcher = new Routing\Dispatcher($router);
+            $route = $dispatcher->dispatch($this->request->getMethod(), $this->request->getRequestUri());
+
+            if(!is_null($route)) {
+                break;
+            }
         }
 
         try {
             $this->callBeforeFilters();
+            $response = call_user_func_array($route->getCallback(), [$this->request, $this->response]);
             $this->sendResponse($response);
             $this->callAfterFilters();
         } catch (Exception $e) {
@@ -69,16 +74,6 @@ class Phancy
     {
         array_push($this->afterFilters, $callback);
     }
-
-    /*public function __call($name, $arguments)
-    {
-        $name = strtoupper($name);
-        if (in_array($name, $this->verbs)) {
-            $this->router->addRoute($name, $arguments[0], $arguments[1]);
-        } else {
-            throw new \Exception('Method not found');
-        }
-    }*/
 
     private function sendResponse(Response $response)
     {
