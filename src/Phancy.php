@@ -11,7 +11,6 @@ class Phancy
     private $resources;
     private $request;
     private $response;
-    private $verbs = ['DELETE', 'GET', 'PATCH', 'POST', 'PUT'];
     private $beforeFilters;
     private $afterFilters;
     private $serializer;
@@ -42,11 +41,10 @@ class Phancy
     public function process()
     {
         foreach ($this->resources as $resource) {
-            $resource->endpoints($this);
+            $resource->endpoints($this->router);
+            $dispatcher = new Routing\Dispatcher($this->router);
+            $response = $dispatcher->dispatch($this->request, $this->response);
         }
-
-        $dispatcher = new Routing\Dispatcher($this->router);
-        $response = $dispatcher->dispatch($this->request, $this->response);
 
         try {
             $this->callBeforeFilters();
@@ -72,7 +70,7 @@ class Phancy
         array_push($this->afterFilters, $callback);
     }
 
-    public function __call($name, $arguments)
+    /*public function __call($name, $arguments)
     {
         $name = strtoupper($name);
         if (in_array($name, $this->verbs)) {
@@ -80,7 +78,7 @@ class Phancy
         } else {
             throw new \Exception('Method not found');
         }
-    }
+    }*/
 
     private function sendResponse(Response $response)
     {
