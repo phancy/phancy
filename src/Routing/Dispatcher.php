@@ -29,7 +29,7 @@ class Dispatcher
                 // return 405 Method Not Allowed
                 break;
             case \FastRoute\Dispatcher::FOUND:
-                return $response->setData(call_user_func_array($route[1], [$request, $response]));
+                return $response->setData(call_user_func_array($route[1], $route[2]));
                 break;
         }
     }
