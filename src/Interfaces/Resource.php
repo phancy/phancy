@@ -1,9 +1,9 @@
 <?php
 namespace Phancy\Interfaces;
 
-use Phancy\Phancy;
+use Phancy\Routing\Router;
 
 interface Resource
 {
-    public function endpoints(Phancy $phancy);
+    public function endpoints(Router $router);
 }
