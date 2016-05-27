@@ -22,12 +22,12 @@ class Dispatcher
         $route = $this->dispatcher->dispatch($method, $uri);
 
         switch($route[0]) {
-            case \FastRoute\Dispatcher::NOT_FOUND:
-                throw new HttpNotFound();
             case \FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
                 throw new HttpMethodNotAllowed();
             case \FastRoute\Dispatcher::FOUND:
                 return new Route($route[1], $route[2]);
         }
+
+        return null;
     }
 }

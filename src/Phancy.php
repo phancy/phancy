@@ -2,6 +2,7 @@
 namespace Phancy;
 
 use Exception;
+use Phancy\Exceptions\HttpNotFound;
 use Phancy\Http\Resource;
 use Phancy\Http\Response;
 use Phancy\Interfaces\Serializer;
@@ -34,6 +35,7 @@ class Phancy
 
     public function process()
     {
+        $route = null;
         foreach ($this->resources as $resource) {
             $router = new Routing\Router();
             $resource->endpoints($router);
@@ -45,7 +47,9 @@ class Phancy
             }
         }
 
-        // TODO: throw error if we never find a route...
+        if ($route === null) {
+            throw new HttpNotFound();
+        }
 
         try {
             $this->callBeforeFilters($resource);
