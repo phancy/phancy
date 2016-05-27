@@ -30,6 +30,11 @@ class Router
 
     public function __call($name, $arguments)
     {
-        $this->addRoute(strtoupper($name), $arguments[0], $arguments[1]);
+        $verb = strtoupper($name);
+        if (in_array($verb, $this->verbs)) {
+            return $this->addRoute($verb, $arguments[0], $arguments[1]);
+        }
+
+        throw new \BadMethodCallException();
     }
 }
