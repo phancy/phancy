@@ -8,24 +8,24 @@ use FastRoute\RouteParser;
 
 class Router
 {
-    private $collection;
+    private $routes;
     private $verbs = ['DELETE', 'GET', 'PATCH', 'POST', 'PUT'];
 
     public function __construct()
     {
         $generator = new GroupCountBased();
         $parser = new RouteParser\Std();
-        $this->collection = new RouteCollector($parser, $generator);
+        $this->routes = new RouteCollector($parser, $generator);
     }
 
     public function addRoute($verb, $endpoint, $handler)
     {
-        $this->collection->addRoute($verb, $endpoint, $handler);
+        $this->routes->addRoute($verb, $endpoint, $handler);
     }
 
     public function getData()
     {
-        return $this->collection->getData();
+        return $this->routes->getData();
     }
 
     public function __call($name, $arguments)
